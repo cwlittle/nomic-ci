@@ -65,7 +65,7 @@ jobs:
           command: test
           args: --verbose --all-features
 
-  build-rest:
+  check-rest:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -75,11 +75,27 @@ jobs:
         with:
           toolchain: nightly-2023-05-08
           override: true
-      - name: Build Rest
+      - name: Check Rest
         uses: actions-rs/cargo@v1
         with:
           command: check
           args: --manifest-path rest/Cargo.toml --verbose
+
+  build-wasm:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Use Nightly
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly-2023-05-08
+          components: wasm32-unknown-unknown
+          override: true
+      - name: Install
+        run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
+      - name: Build Wasm
+        run: wasm-pack -v build --target web
 
   coverage:
     runs-on: ubuntu-latest
